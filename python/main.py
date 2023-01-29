@@ -15,6 +15,9 @@ def main():
     ast = parse.parse(code)
     res = syntax.validate(ast)
     if type(res) == str:
-        sys.exit(1)
+        raise res
     elif res == True:
         pass
+
+if __name__ == '__main__':
+    main()
