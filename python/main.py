@@ -16,16 +16,18 @@ def main():
     code = readfile(sys.argv[1])
     # Convert into tokens
     tokens = lexer.tokenize(code)
+    for i in tokens:
+        print(i.type, i.val)
     # Do magic to get an ast
-    ast = parse.parse(tokens)
+    #ast = parse.parse(tokens)
     # Check syntax
-    res = syntax.validate(ast)
+    #res = syntax.validate(ast)
     # If invalid, throw an error
-    if type(res) == str:
-        raise res
+    #if type(res) == str:
+    #    raise res
     # If not, then do nothing
-    elif res == True:
-        pass
+    #elif res == True:
+    #    pass
 
 if __name__ == '__main__':
     main()

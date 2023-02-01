@@ -10,10 +10,17 @@ class Connection:
 
 class Token:
 
-    def __init__(self, id: str, **kwargs) -> None:
+    def __init__(self, type: str, value: str, **kwargs) -> None:
         self.uuid = kwargs.get('uuid', None) if kwargs.get('uuid', None) != None else uuid.uuid4()
-        self.id: str = id
+        self.type: str = type
+        self.val = value
         self.c: list[Connection] = []
+
+
+class Statement:
+
+    def __init__(self) -> None:
+        pass
 
 
 class Tree:
@@ -23,7 +30,7 @@ class Tree:
         self.ids: list[str] = []
         self.currentslice = 0
 
-        self.all.append(Token('0'))
+        self.all.append(Token('0', '0'))
         return None
         
     def update(self) -> None:
