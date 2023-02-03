@@ -7,7 +7,8 @@ token_types = [
     'punctuator',
     'number',
     'string',
-    'endstatement'
+    'endstatement',
+    'assignment'
 ]
 
 data_types = [
@@ -21,6 +22,11 @@ def tokenize(code: str) -> list[Token]:
     current_number = []
     for i in code:
         if i.isspace() or i == '\n':
+            for j in data_types:
+                if ''.join(current_string) == j:
+                    all_tokens.append(Token(token_types[0], ''.join(current_string)))
+                    current_string = []
+                    continue
             if len(current_string) != 0:
                 all_tokens.append(Token(token_types[4], ''.join(current_string)))
                 current_string = []
@@ -28,12 +34,15 @@ def tokenize(code: str) -> list[Token]:
                 all_tokens.append(Token(token_types[3], ''.join(current_number)))
                 current_number = []
             if i == '\n':
-                all_tokens.append(Token(token_types[5], '0'))
+                all_tokens.append(Token(token_types[5], 'null'))
                 current_string = []
                 current_number = []
                 continue
         if i in '+-*/':
             all_tokens.append(Token(token_types[1], i))
+            continue
+        if i == '=':
+            all_tokens.append(Token(token_types[6], 'null'))
             continue
         if i in '\'"':
             all_tokens.append(Token(token_types[2], i))

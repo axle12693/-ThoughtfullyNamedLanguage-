@@ -1,20 +1,21 @@
 import uuid
 
-class Connection:
+'''class Connection:
 
     def __init__(self, start, end, realtionship) -> None:
         self.from_: str = start
         self.to: str = end
-        self.r = realtionship
+        self.r = realtionship'''
 
 
 class Token:
 
-    def __init__(self, type: str, value: str, **kwargs) -> None:
+    def __init__(self, type: str, value: str, pos: tuple, **kwargs) -> None:
         self.uuid = kwargs.get('uuid', None) if kwargs.get('uuid', None) != None else uuid.uuid4()
         self.type: str = type
         self.val = value
-        self.c: list[Connection] = []
+        self.pos = pos
+        #self.c: list[Connection] = []
 
 
 class Statement:
@@ -23,6 +24,7 @@ class Statement:
         pass
 
 
+'''
 class Tree:
 
     def __init__(self) -> None:
@@ -70,3 +72,4 @@ class Tree:
         self.update()
         self.currentslice = 0
         return None
+'''
