@@ -18,7 +18,7 @@ def parse(tokens: list[Token]):
     # Previous 2 tokens
     p2t: list[Token] = None
 
-    skip2: bool = True
+    skip2: bool = False
 
     for k in range(len(tokens)):
         tslice = k
