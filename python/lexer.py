@@ -40,7 +40,7 @@ def tokenize(code: str) -> list[Token]:
                 all_tokens.append(Token(token_types[5], 'null', (k, k)))
                 current_string = []
                 current_number = []
-                continue
+            continue
         if i in '+-*/':
             all_tokens.append(Token(token_types[1], i, (k, k+1)))
             continue
@@ -60,14 +60,14 @@ def tokenize(code: str) -> list[Token]:
                 string_pos[0] = k
             current_string.append(i)
             continue
-        if not i.isdigit() and not i in string.ascii_letters\
-            and i not in '+-*/' and i != '=' and i not in '\'"':
-
-            raise TNLUnidentifiedToken(i)
+        if True:
+            raise TNLUnidentifiedToken(f"{i}")
 
     if len(current_string) != 0:
         all_tokens.append(Token(token_types[4], ''.join(current_string), (string_pos[0], k)))
     if len(current_number) != 0:
         all_tokens.append(Token(token_types[3], ''.join(current_number), (number_pos[0], k)))
+    if all_tokens[-1].type != 'endstatement':
+        all_tokens.append(Token(token_types[5], 'null', (k+1, k+1)))
 
     return all_tokens
