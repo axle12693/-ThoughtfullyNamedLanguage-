@@ -3,7 +3,6 @@ import sys
 from objects import Token
 import lexer
 import parse
-#import syntax
 
 
 # Simple function to read a file
@@ -21,17 +20,14 @@ def main():
     # Convert into tokens
     tokens = lexer.tokenize(code)
     #printtokens(tokens)
-    # Do magic to get an ast
+    # Do magic to get an ast and check syntax
     ast = parse.parse(tokens)
     print(ast)
-    # Check syntax
-    #res = syntax.validate(ast)
-    # If invalid, throw an error
-    #if type(res) == str:
-    #    raise res
-    # If not, then do nothing
-    #elif res == True:
-    #    pass
+    # Do more magic to generate runnable C code
+    # ??????????
+    # ??????????
+    # ??????????
+    # ??????????
 
 if __name__ == '__main__':
     main()

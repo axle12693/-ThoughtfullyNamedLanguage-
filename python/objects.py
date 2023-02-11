@@ -11,7 +11,7 @@ import uuid
 class Token:
 
     def __init__(self, type: str, value: str, pos: tuple, **kwargs) -> None:
-        self.uuid = kwargs.get('uuid', None) if kwargs.get('uuid', None) != None else uuid.uuid4()
+        self.uuid = kwargs.get('uuid', uuid.uuid4())
         self.type: str = type
         self.val = value
         self.pos = pos

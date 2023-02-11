@@ -1,15 +1,16 @@
 from objects import Token
-from string import ascii_letters
+from lexer import token_types
 from error import TNLSyntax
-import re
 
-def ismatch(m) -> bool:
-    if m == None:
-        return False
-    else:
-        return True
+def register(d: dict, subcat: str, start: int, end: int, **kwargs):
+    value = kwargs.get('value')
+    d[subcat] = {}
+    d[subcat]['start'] = start
+    d[subcat]['end'] = end
 
-def parse(tokens: list[Token]):
+
+def parse(tokenlist: list[Token]):
+    tokens = tokenlist
     ast = {}
 
     tslice: int = 0
@@ -18,13 +19,18 @@ def parse(tokens: list[Token]):
     # Previous 2 tokens
     p2t: list[Token] = None
 
+    intvar = []
+    strvar = []
+
     skip2: bool = False
+    line = 1
 
     for k in range(len(tokens)):
         tslice = k
 
         try:
-            n3t = [tokens[tslice], tokens[tslice+1], tokens[tslice+2], tokens[tslice+3]]
+            n3t = [tokens[tslice], tokens[tslice+1],
+                   tokens[tslice+2], tokens[tslice+3]]
         except IndexError:
             try:
                 n3t = [tokens[tslice], tokens[tslice+1], tokens[tslice+2]]
@@ -35,88 +41,52 @@ def parse(tokens: list[Token]):
                     n3t = [tokens[tslice]]
 
         p2t = [tokens[tslice-2], tokens[tslice-1]]
-        
 
+        if tokens[tslice].type == 'endstatement':
+            line += 1
         if skip2:
             skip2 = False
             continue
+
         if n3t[0].type == 'datatype' and n3t[1].type == 'string':
             print(f'declare var {n3t[1].val} of type {n3t[0].val}')
+            if n3t[0].val == 'int':
+                intvar.append(n3t[1])
+                register(ast, 'VariableDeclaration', n3t[0].pos[0], n3t[1].pos[1])
+            elif n3t[0].val == 'str':
+                strvar.append(n3t[1])
+            continue
+
         if n3t[0].type == 'string' and n3t[1].type == 'assignment' and n3t[2].type == 'number':
             print(f'assign int {n3t[0].val} val {n3t[2].val}')
+            continue
+
         if n3t[0].type == 'string' and n3t[1].type == 'assignment' and n3t[2].type == 'punctuator':
             skip2 = True
             continue
-        if n3t[0].type == 'punctuator' and n3t[1].type == 'punctuator' and n3t[2].type == 'string':
-            print(f'assign str {p2t[0].val} var {n3t[2].val}')
-        
 
+        if n3t[0].type == 'punctuator' and n3t[1].type == 'string' and n3t[2].type == 'punctuator' and n3t[0].val == n3t[2].val:
+            print(
+                f'assign str {p2t[0].val} var {n3t[0].val+n3t[1].val+n3t[2].val}')
+            continue
+                
+
+        # Syntax checking
+
+        if n3t[0].type == 'string' and (n3t[0] in intvar or n3t[0] in strvar) and n3t[1].type != 'endstatement':
+            raise TNLSyntax(
+                    f"\n\nNon-alphabetic character in variable name on line {line}")
+
+        for i in token_types:
+            if n3t[0].type == 'datatype' and n3t[1].type == i and i != 'string':
+                raise TNLSyntax(
+                    f"\n\nNon-alphabetic character in variable name on line {line}")
+
+        if n3t[0].type == 'punctuator' and n3t[1].type == 'string' and not n3t[2].type == 'punctuator':
+            raise TNLSyntax(f"\n\nUnclosed string on line {line}")
+
+        if n3t[0].type == 'punctuator' and n3t[1].type == 'string' and n3t[2].type == 'punctuator' and n3t[0].val != n3t[2].val:
+            raise TNLSyntax(f"\n\n Unmatched quotes on line {line}")
 
 
     return ast
-
-'''if k in intdec:
-tslice = k
-elif k in strdec:
-tslice = k
-elif k in endstm:
-tslice = k
-elif k in assign:
-tslice = k
-elif k in number:
-tslice = k
-elif k in string:
-tslice = k
-elif k in punct:
-tslice = k
-else:
-pass'''
-
-'''    intdec: list[int] = []
-    strdec: list[int] = []
-    endstm: list[int] = []
-    assign: list[int] = []
-    number: list[int] = []
-    string: list[int] = []
-    punct : list[int] = []
-
-    for j, i in enumerate(tokens):
-        if i.type == 'datatype' and i.val == 'int':
-            intdec.append(j)
-            continue
-        if i.type == 'datatype' and i.val == 'str':
-            strdec.append(j)
-            continue
-        if i.type == 'endstatement' and i.val == 'null':
-            endstm.append(j)
-            continue
-        if i.type == 'assignment' and i.val == 'null':
-            assign.append(j)
-            continue
-        if i.type == 'number' and i.val.isdigit():
-            number.append(j)
-            continue
-        if i.type == 'string' and i.val in ascii_letters:
-            string.append(j)
-            continue
-        if i.type == 'punctuator' and (i.val == "'" or i.val == '"'):
-            punct.append(j)
-
-    all = [intdec,strdec,endstm,assign,number,string,punct]
-'''
-
-'''for l in all:
-    for m in l:
-        if m+1 in l:
-            if n3t[0].type == 'datatype' and n3t[1].type == 'string':
-                print(f'declare var {n3t[1].val} type {n3t[0].val}')
-            if n3t[0].type == 'string' and n3t[1].type == 'assignment' and n3t[2].type == 'number':
-                print(f'assign int {n3t[0].val} val {n3t[2].val}')
-            if n3t[0].type == 'string' and n3t[1].type == 'assignment' and n3t[2].type == 'punctuator':
-                print(f'assign str {n3t[0].val}')'''
-            
-
-'''declaration = re.search(r'datatype string', typestring)
-if ismatch(declaration):
-print(declaration.group(0))
-print(declaration.start(0), declaration.end(0))'''
