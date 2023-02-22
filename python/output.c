@@ -9,5 +9,7 @@ int main()
     char *a = malloc(256);
     strcpy(y, "lol");
     strcpy(a, "lamoloserwannabe");
+    free(y);
+    free(a);
     return 0;
 }

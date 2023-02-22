@@ -3,6 +3,8 @@ from os import system
 
 
 def gencode(ast: list[dict]) -> None:
+    mallocs = []
+
     code = "#include <stdlib.h>\n#include <string.h>\n\nint main() {"
     for i in ast:
         match i['type']:
@@ -17,6 +19,7 @@ def gencode(ast: list[dict]) -> None:
 
                     case 'str':
                         code += f"char *{i['value']} = malloc(256);"
+                        mallocs.append(i['value'])
 
             case 'VariableAssignment':
 
@@ -24,6 +27,9 @@ def gencode(ast: list[dict]) -> None:
                     code += f"strcpy({i['name']}, {i['value']});"
                 else:
                     code += f"{i['name']} = {i['value']};"
+
+    for i in mallocs:
+        code += f"free({i});"
 
     code += "return 0;}"
 
