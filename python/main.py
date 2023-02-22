@@ -28,7 +28,7 @@ def main():
     # printtokens(tokens)
     # Do magic to get an ast and check syntax
     ast = parse.parse(tokens)
-    # print(ast)
+    print(ast)
     if COMPILE:
         # Do more magic to generate runnable C code
         generate.gencode(ast)

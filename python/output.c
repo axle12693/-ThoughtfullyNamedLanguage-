@@ -1,1 +1,13 @@
-int main() {int x;x = 5;char y[] = "lol";return 0;}
+#include <stdlib.h>
+#include <string.h>
+
+int main()
+{
+    int x;
+    x = 5;
+    char *y = malloc(256);
+    char *a = malloc(256);
+    strcpy(y, "lol");
+    strcpy(a, "lamoloserwannabe");
+    return 0;
+}
