@@ -1,17 +1,41 @@
 from objects import Token
-from lexer import token_types
-from error import TNLSyntax
+from lexer import token_types, data_types
+import error
+from uuid import UUID
 
-def register(d: dict, subcat: str, start: int, end: int, **kwargs):
-    value = kwargs.get('value')
-    d[subcat] = {}
-    d[subcat]['start'] = start
-    d[subcat]['end'] = end
 
+intvar: list[str] = []
+strvar: list[str] = []
+allvar: list[str] = []
+
+def vardec(d: list, start: int, end: int, type: str, value: Token) -> None:
+    d2 = {}
+    d2['type'] = 'VariableDeclaration'
+    d2['start'] = start
+    d2['end'] = end
+    d2['datatype'] = type
+    d2['value'] = value.val
+    d.append(d2)
+
+def assign(d: list, start: int, end: int, name: Token, value: Token, line: int) -> None:
+    
+    if name.val not in allvar:
+        raise error.TNLUndeclaredVariable(f"\n\nVariable {name.val} assigned value before declaration on line {line}.")
+
+    d2 = {}
+    d2['type'] = 'VariableAssignment'
+    d2['start'] = start
+    d2['end'] = end
+    d2['name'] = name.val
+    try:
+        d2['value'] = int(value.val)
+    except ValueError:
+        d2['value'] = value.val
+    d.append(d2)
 
 def parse(tokenlist: list[Token]):
     tokens = tokenlist
-    ast = {}
+    ast = []
 
     tslice: int = 0
     # Next 3 tokens
@@ -19,14 +43,13 @@ def parse(tokenlist: list[Token]):
     # Previous 2 tokens
     p2t: list[Token] = None
 
-    intvar = []
-    strvar = []
-
     skip2: bool = False
     line = 1
 
     for k in range(len(tokens)):
         tslice = k
+        global allvar
+        allvar = intvar+strvar
 
         try:
             n3t = [tokens[tslice], tokens[tslice+1],
@@ -51,14 +74,16 @@ def parse(tokenlist: list[Token]):
         if n3t[0].type == 'datatype' and n3t[1].type == 'string':
             print(f'declare var {n3t[1].val} of type {n3t[0].val}')
             if n3t[0].val == 'int':
-                intvar.append(n3t[1])
-                register(ast, 'VariableDeclaration', n3t[0].pos[0], n3t[1].pos[1])
+                intvar.append(n3t[1].val)
+                vardec(ast, n3t[0].pos[0], n3t[1].pos[1], 'int', n3t[1])
             elif n3t[0].val == 'str':
-                strvar.append(n3t[1])
+                strvar.append(n3t[1].val)
+                vardec(ast, n3t[0].pos[0], n3t[1].pos[1], 'str', n3t[1])
             continue
 
         if n3t[0].type == 'string' and n3t[1].type == 'assignment' and n3t[2].type == 'number':
             print(f'assign int {n3t[0].val} val {n3t[2].val}')
+            assign(ast, n3t[0].pos[0], n3t[2].pos[1], n3t[0], n3t[2], line)
             continue
 
         if n3t[0].type == 'string' and n3t[1].type == 'assignment' and n3t[2].type == 'punctuator':
@@ -66,27 +91,29 @@ def parse(tokenlist: list[Token]):
             continue
 
         if n3t[0].type == 'punctuator' and n3t[1].type == 'string' and n3t[2].type == 'punctuator' and n3t[0].val == n3t[2].val:
+            rawstr = Token('rawstring', n3t[0].val+n3t[1].val+n3t[2].val, (n3t[0].pos[0], n3t[2].pos[1]))
             print(
-                f'assign str {p2t[0].val} var {n3t[0].val+n3t[1].val+n3t[2].val}')
+                f'assign str {p2t[0].val} var {rawstr.val}')
+            assign(ast, rawstr.pos[0], rawstr.pos[1], p2t[0], rawstr, line)
             continue
                 
 
         # Syntax checking
 
         if n3t[0].type == 'string' and (n3t[0] in intvar or n3t[0] in strvar) and n3t[1].type != 'endstatement':
-            raise TNLSyntax(
+            raise error.TNLSyntax(
                     f"\n\nNon-alphabetic character in variable name on line {line}")
 
         for i in token_types:
             if n3t[0].type == 'datatype' and n3t[1].type == i and i != 'string':
-                raise TNLSyntax(
+                raise error.TNLSyntax(
                     f"\n\nNon-alphabetic character in variable name on line {line}")
 
         if n3t[0].type == 'punctuator' and n3t[1].type == 'string' and not n3t[2].type == 'punctuator':
-            raise TNLSyntax(f"\n\nUnclosed string on line {line}")
+            raise error.TNLSyntax(f"\n\nUnclosed string on line {line}")
 
         if n3t[0].type == 'punctuator' and n3t[1].type == 'string' and n3t[2].type == 'punctuator' and n3t[0].val != n3t[2].val:
-            raise TNLSyntax(f"\n\n Unmatched quotes on line {line}")
+            raise error.TNLSyntax(f"\n\n Unmatched quotes on line {line}")
 
 
     return ast

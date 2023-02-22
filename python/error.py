@@ -5,3 +5,6 @@ class TNLUnidentifiedToken(Exception):
 class TNLSyntax(Exception):
     """Used when the TNL syntax is incorrect"""
     pass
+
+class TNLUndeclaredVariable(Exception):
+    """Used when a variable is assigned a value before being declared"""
