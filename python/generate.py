@@ -1,4 +1,3 @@
-from objects import Token
 from os import system
 
 
@@ -12,7 +11,7 @@ def gencode(ast: list[dict]) -> None:
             case 'VariableDeclaration':
 
                 match i['datatype']:
-                    
+
                     case 'int':
                         code += f"int {i['value']};"
                         var = i['value']

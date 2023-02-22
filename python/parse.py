@@ -1,7 +1,6 @@
 from objects import Token
-from lexer import token_types, data_types
+from lexer import token_types
 import error
-from uuid import UUID
 
 
 intvar: list[str] = []
