@@ -1,4 +1,4 @@
-from os import system
+from os import system, name
 
 
 def gencode(ast: list[dict]) -> None:
@@ -35,7 +35,8 @@ def gencode(ast: list[dict]) -> None:
     with open('output.c', 'w') as cfile:
         cfile.write(code)
 
-    system(f"cc output.c")
+    if name != 'nt':
+        system(f"cc output.c")
 
     return None
 
