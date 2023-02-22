@@ -8,6 +8,7 @@ intvar: list[str] = []
 strvar: list[str] = []
 allvar: list[str] = []
 
+
 def vardec(d: list, start: int, end: int, type: str, value: Token) -> None:
     d2 = {}
     d2['type'] = 'VariableDeclaration'
@@ -17,10 +18,12 @@ def vardec(d: list, start: int, end: int, type: str, value: Token) -> None:
     d2['value'] = value.val
     d.append(d2)
 
+
 def assign(d: list, start: int, end: int, name: Token, value: Token, line: int) -> None:
-    
+
     if name.val not in allvar:
-        raise error.TNLUndeclaredVariable(f"\n\nVariable {name.val} assigned value before declaration on line {line}.")
+        raise error.TNLUndeclaredVariable(
+            f"\n\nVariable {name.val} assigned value before declaration on line {line}.")
 
     d2 = {}
     d2['type'] = 'VariableAssignment'
@@ -32,6 +35,7 @@ def assign(d: list, start: int, end: int, name: Token, value: Token, line: int) 
     except ValueError:
         d2['value'] = value.val
     d.append(d2)
+
 
 def parse(tokenlist: list[Token]):
     tokens = tokenlist
@@ -91,18 +95,18 @@ def parse(tokenlist: list[Token]):
             continue
 
         if n3t[0].type == 'punctuator' and n3t[1].type == 'string' and n3t[2].type == 'punctuator' and n3t[0].val == n3t[2].val:
-            rawstr = Token('rawstring', n3t[0].val+n3t[1].val+n3t[2].val, (n3t[0].pos[0], n3t[2].pos[1]))
+            rawstr = Token('rawstring', '"' +
+                           n3t[1].val+'"', (n3t[0].pos[0], n3t[2].pos[1]))
             print(
                 f'assign str {p2t[0].val} var {rawstr.val}')
             assign(ast, rawstr.pos[0], rawstr.pos[1], p2t[0], rawstr, line)
             continue
-                
 
         # Syntax checking
 
         if n3t[0].type == 'string' and (n3t[0] in intvar or n3t[0] in strvar) and n3t[1].type != 'endstatement':
             raise error.TNLSyntax(
-                    f"\n\nNon-alphabetic character in variable name on line {line}")
+                f"\n\nNon-alphabetic character in variable name on line {line}")
 
         for i in token_types:
             if n3t[0].type == 'datatype' and n3t[1].type == i and i != 'string':
@@ -114,6 +118,5 @@ def parse(tokenlist: list[Token]):
 
         if n3t[0].type == 'punctuator' and n3t[1].type == 'string' and n3t[2].type == 'punctuator' and n3t[0].val != n3t[2].val:
             raise error.TNLSyntax(f"\n\n Unmatched quotes on line {line}")
-
 
     return ast

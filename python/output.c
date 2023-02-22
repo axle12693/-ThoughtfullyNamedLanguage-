@@ -1,1 +1,1 @@
-int main() {int x;x = 5;char[] y;y = 'lol';return 0;}
+int main() {int x;x = 5;char y[] = "lol";return 0;}
