@@ -75,7 +75,6 @@ def parse(tokenlist: list[Token]):
             continue
 
         if n3t[0].type == 'datatype' and n3t[1].type == 'string':
-            print(f'declare var {n3t[1].val} of type {n3t[0].val}')
             if n3t[0].val == 'int':
                 intvar.append(n3t[1].val)
                 vardec(ast, n3t[0].pos[0], n3t[1].pos[1], 'int', n3t[1])
@@ -85,7 +84,6 @@ def parse(tokenlist: list[Token]):
             continue
 
         if n3t[0].type == 'string' and n3t[1].type == 'assignment' and n3t[2].type == 'number':
-            print(f'assign int {n3t[0].val} val {n3t[2].val}')
             assign(ast, n3t[0].pos[0], n3t[2].pos[1], n3t[0], n3t[2], line)
             continue
 
@@ -96,8 +94,6 @@ def parse(tokenlist: list[Token]):
         if n3t[0].type == 'punctuator' and n3t[1].type == 'string' and n3t[2].type == 'punctuator' and n3t[0].val == n3t[2].val:
             rawstr = Token('rawstring', '"' +
                            n3t[1].val+'"', (n3t[0].pos[0], n3t[2].pos[1]))
-            print(
-                f'assign str {p2t[0].val} var {rawstr.val}')
             assign(ast, rawstr.pos[0], rawstr.pos[1], p2t[0], rawstr, line)
             continue
 

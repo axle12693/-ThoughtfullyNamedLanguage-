@@ -39,7 +39,3 @@ def gencode(ast: list[dict]) -> None:
         system(f"cc output.c")
 
     return None
-
-
-def runcode(ast: list[dict]):
-    pass
