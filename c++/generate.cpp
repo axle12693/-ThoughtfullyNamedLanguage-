@@ -1,26 +1,31 @@
-#include <iostream>
+#include "objects.cpp"
 #include <fstream>
-#include <vector>
+#include <iostream>
 #include <map>
 #include <string>
-#include "objects.cpp"
+#include <vector>
 
 void gencode(std::vector<std::map<std::string, std::string>> &ast) {
     std::vector<std::string> intdecs;
     std::vector<std::string> mallocs;
 
-    std::string code = "#include <stdlib.h>\n#include <string.h>\n\nint main() {";
+    std::string code =
+        "#include <stdlib.h>\n#include <string.h>\n\nint main() {";
 
     for (auto i : ast) {
         if (i["type"] == "VariableDeclaration") {
 
-            if (i["datatype"] == "int" && std::find(intdecs.begin(), intdecs.end(), i["value"]) == intdecs.end()) {
+            if (i["datatype"] == "int" &&
+                std::find(intdecs.begin(), intdecs.end(), i["value"]) ==
+                    intdecs.end()) {
                 code += ("int " + i["value"] + ";");
                 intdecs.push_back(i["value"]);
                 continue;
             }
 
-            if (i["datatype"] == "str" && std::find(mallocs.begin(), mallocs.end(), i["value"]) == mallocs.end()) {
+            if (i["datatype"] == "str" &&
+                std::find(mallocs.begin(), mallocs.end(), i["value"]) ==
+                    mallocs.end()) {
                 code += ("char *" + i["value"] + " = malloc(256);");
                 mallocs.push_back(i["value"]);
                 continue;
@@ -31,18 +36,17 @@ void gencode(std::vector<std::map<std::string, std::string>> &ast) {
 
         if (i["type"] == "VariableAssignment") {
             if (i["datatype"] == "str") {
-                code += ("strcpy("+i["name"]+", "+i["value"]+ ");");
+                code += ("strcpy(" + i["name"] + ", " + i["value"] + ");");
                 continue;
             } else {
-                code += (i["name"]+" = "+i["value"]+";");
+                code += (i["name"] + " = " + i["value"] + ";");
                 continue;
             }
-            
         }
     }
 
     for (auto i : mallocs) {
-        code += ("free("+i+");");
+        code += ("free(" + i + ");");
     }
     code += "return 0;}";
 

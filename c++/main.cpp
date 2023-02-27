@@ -1,10 +1,10 @@
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include "objects.cpp"
-#include "lexer.cpp"
-#include "parse.cpp"
 #include "generate.cpp"
+#include "lexer.cpp"
+#include "objects.cpp"
+#include "parse.cpp"
+#include <fstream>
+#include <iostream>
+#include <sstream>
 
 std::string readfile(std::string filename) {
     std::ifstream f(filename);
@@ -48,7 +48,6 @@ int main(int argc, char *argv[]) {
         // printast(ast);
         // Generate C code because why not
         gencode(ast);
-    return 0;
+        return 0;
     }
 }
-
