@@ -99,7 +99,11 @@ def parse(tokenlist: list[Token]):
 
         # Syntax checking
 
-        if n3t[0].type == 'string' and (n3t[0] in intvar or n3t[0] in strvar) and n3t[1].type != 'endstatement':
+        if n3t[0].type == 'string' and (n3t[0].val in intvar or n3t[0].val in strvar) and n3t[1].type != 'endstatement':
+            raise error.TNLSyntax(
+                f"\n\nNon-alphabetic character in variable name on line {line}")
+        
+        if n3t[0].type == 'number' and (n3t[1].val in intvar or n3t[1].val in strvar) and n3t[1].type == 'string':
             raise error.TNLSyntax(
                 f"\n\nNon-alphabetic character in variable name on line {line}")
 
