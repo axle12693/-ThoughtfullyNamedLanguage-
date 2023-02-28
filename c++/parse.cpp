@@ -14,18 +14,18 @@ void vardec(std::vector<std::map<std::string, std::string>> &d,
     std::map<std::string, std::string> d2;
     d2["type"] = "VariableDeclaration";
     d2["datatype"] = type;
-    d2["value"] = value.getval();
+    d2["value"] = value.val;
     d.push_back(d2);
 }
 
 void varassign(std::vector<std::map<std::string, std::string>> &d,
                std::string type, Token &name, Token &value, int line) {
 
-    if (std::find(allvar.begin(), allvar.end(), name.getval()) ==
+    if (std::find(allvar.begin(), allvar.end(), name.val) ==
         allvar.end()) {
         try {
             throw TNLUndelcaredVariable(
-                "\n\nVariable " + std::string(name.getval()) +
+                "\n\nVariable " + std::string(name.val) +
                 " assigned value before declaration on line " +
                 std::to_string(line) + ".");
         } catch (const std::exception &e) {
@@ -36,8 +36,8 @@ void varassign(std::vector<std::map<std::string, std::string>> &d,
     std::map<std::string, std::string> d2;
     d2["type"] = "VariableAssignment";
     d2["datatype"] = type;
-    d2["name"] = name.getval();
-    d2["value"] = value.getval();
+    d2["name"] = name.val;
+    d2["value"] = value.val;
     d.push_back(d2);
 }
 
@@ -69,7 +69,7 @@ parse(std::vector<Token> tokens) {
 
         p2t = {tokens[k - 2], tokens[k - 1]};
 
-        if (tokens[k].gettype() == "endstatement") {
+        if (tokens[k].type == "endstatement") {
             line++;
             continue;
         }
@@ -78,41 +78,41 @@ parse(std::vector<Token> tokens) {
             continue;
         }
 
-        if (n3t[0].gettype() == "datatype" && n3t[1].gettype() == "string") {
-            allvar.push_back(n3t[1].getval());
-            if (n3t[0].getval() == "int") {
+        if (n3t[0].type == "datatype" && n3t[1].type == "string") {
+            allvar.push_back(n3t[1].val);
+            if (n3t[0].val == "int") {
                 vardec(ast, "int", n3t[1]);
-            } else if (n3t[0].getval() == "str") {
+            } else if (n3t[0].val == "str") {
                 vardec(ast, "str", n3t[1]);
             }
             continue;
         }
 
-        if (n3t[0].gettype() == "string" && n3t[1].gettype() == "assignment" &&
-            n3t[2].gettype() == "number") {
+        if (n3t[0].type == "string" && n3t[1].type == "assignment" &&
+            n3t[2].type == "number") {
             varassign(ast, "int", n3t[0], n3t[2], line);
             continue;
         }
 
-        if (n3t[0].gettype() == "string" && n3t[1].gettype() == "assignment" &&
-            n3t[2].gettype() == "punctuator") {
+        if (n3t[0].type == "string" && n3t[1].type == "assignment" &&
+            n3t[2].type == "punctuator") {
             skip2 = true;
             continue;
         }
 
-        if (n3t[0].gettype() == "punctuator" && n3t[1].gettype() == "string" &&
-            n3t[2].gettype() == "punctuator" &&
-            n3t[0].getval() == n3t[2].getval()) {
+        if (n3t[0].type == "punctuator" && n3t[1].type == "string" &&
+            n3t[2].type == "punctuator" &&
+            n3t[0].val == n3t[2].val) {
             Token rawstr("rawstring",
-                         "\"" + std::string(n3t[1].getval()) + "\"");
+                         "\"" + std::string(n3t[1].val) + "\"");
             varassign(ast, "str", p2t[0], rawstr, line);
             continue;
         }
 
-        if (n3t[0].gettype() == "datatype" &&
-            (std::find(allvar.begin(), allvar.end(), n3t[1].getval()) ==
+        if (n3t[0].type == "datatype" &&
+            (std::find(allvar.begin(), allvar.end(), n3t[1].val) ==
              allvar.end()) &&
-            n3t[1].gettype() != "endstatement") {
+            n3t[1].type != "endstatement") {
             try {
                 throw TNLSyntax(
                     "\n\nNon-alphabetic character in variable name on line " +
@@ -122,10 +122,10 @@ parse(std::vector<Token> tokens) {
             }
         }
 
-        if (n3t[0].gettype() == "datatype" &&
-            (std::find(allvar.begin(), allvar.end(), n3t[2].getval()) ==
+        if (n3t[0].type == "datatype" &&
+            (std::find(allvar.begin(), allvar.end(), n3t[2].val) ==
              allvar.end()) &&
-            n3t[1].gettype() == "number") {
+            n3t[1].type == "number") {
             try {
                 throw TNLSyntax(
                     "\n\nNon-alphabetic character in variable name on line " +
@@ -135,7 +135,7 @@ parse(std::vector<Token> tokens) {
             }
         }
 
-        if (n3t[0].gettype() == "datatype" && n3t[1].gettype() != "string") {
+        if (n3t[0].type == "datatype" && n3t[1].type != "string") {
             try {
                 throw TNLSyntax(
                     "\n\nNon-alphabetic character in variable name on line " +
@@ -145,8 +145,8 @@ parse(std::vector<Token> tokens) {
             }
         }
 
-        if (n3t[0].gettype() == "punctuator" && n3t[1].gettype() == "string" &&
-            n3t[2].gettype() != "punctuator") {
+        if (n3t[0].type == "punctuator" && n3t[1].type == "string" &&
+            n3t[2].type != "punctuator") {
             try {
                 throw TNLSyntax("\n\nUnclosed quotes on line " +
                                 std::to_string(line) + ".");
@@ -155,9 +155,9 @@ parse(std::vector<Token> tokens) {
             }
         }
 
-        if (n3t[0].gettype() == "punctuator" && n3t[1].gettype() == "string" &&
-            n3t[2].gettype() == "punctuator" &&
-            n3t[0].getval() != n3t[2].getval()) {
+        if (n3t[0].type == "punctuator" && n3t[1].type == "string" &&
+            n3t[2].type == "punctuator" &&
+            n3t[0].val != n3t[2].val) {
             try {
                 throw TNLSyntax("\n\nUnmatched quotes on line " +
                                 std::to_string(line) + ".");

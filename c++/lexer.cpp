@@ -115,7 +115,7 @@ std::vector<Token> tokenize(std::string &code) {
                   std::string(current_number.begin(), current_number.end())));
         current_number.clear();
     }
-    if (all_tokens[all_tokens.size() - 1].gettype() != "endstatement") {
+    if (all_tokens[all_tokens.size() - 1].type != "endstatement") {
         all_tokens.push_back(Token("endstatement", "null"));
     }
 

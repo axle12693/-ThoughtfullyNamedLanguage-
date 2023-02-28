@@ -17,7 +17,7 @@ std::string readfile(std::string filename) {
 
 void printtokens(std::vector<Token> &tokens) {
     for (auto i : tokens) {
-        std::cout << i.gettype() << ", " << i.getval() << std::endl;
+        std::cout << i.type << ": " << i.val << std::endl;
     }
 }
 
