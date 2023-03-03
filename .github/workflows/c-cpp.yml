@@ -18,7 +18,9 @@ jobs:
         cd c++/
         make
     - name: compile
-      run: ./main file.tnl
+      run: |
+        cd c++/
+        ./main file.tnl
         
   build-mac:
     
@@ -31,7 +33,9 @@ jobs:
         cd c++/
         make
     - name: compile
-      run: ./main file.tnl
+      run: |
+        cd c++/
+        ./main file.tnl
     
     
     
