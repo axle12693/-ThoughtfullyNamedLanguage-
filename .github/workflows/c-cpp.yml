@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  build-linux:
 
     runs-on: ubuntu-latest
 
@@ -17,5 +17,43 @@ jobs:
       run: |
         cd c++/
         make
-    - name: compilefile
-      run: ./main file.tnl
+        
+  build-mac:
+    
+    runs-on: macos-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    - name: make
+      run: |
+        cd c++/
+        make
+        
+  test-linux:
+  
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    - name: compile
+      run: |
+        cd c++
+        ./main file.tnl
+        
+  test-mac:
+  
+    runs-on: macos-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    - name: compile
+      run: |
+        cd c++/
+        ./main file.tnl
+    
+    
+    
+    
+    
+      
+    
