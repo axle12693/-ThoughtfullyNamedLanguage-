@@ -1,5 +1,5 @@
 #include "generate.cpp"
-#include "lexer.cpp"
+#include "newlexer.cpp"
 #include "objects.cpp"
 #include "parse.cpp"
 #include <fstream>
@@ -50,4 +50,5 @@ int main(int argc, char *argv[]) {
         gencode(ast);
         return 0;
     }
+    return 0;
 }

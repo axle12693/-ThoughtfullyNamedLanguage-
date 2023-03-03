@@ -99,7 +99,11 @@ std::vector<Token> tokenize(std::string &code) {
         }
 
         if (true) {
-            throw TNLUnidentifiedToken("\n\nUnidentified token " + i + ".");
+            try {
+                throw TNLUnidentifiedToken("\n\nUnidentified token " + i + ".");
+            } catch (TNLUnidentifiedToken &e) {
+                std::cerr << e.what() << std::endl;
+            }
         }
     }
 

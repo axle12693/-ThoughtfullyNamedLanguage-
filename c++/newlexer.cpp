@@ -10,74 +10,61 @@ std::vector<std::string> token_types = {
 
 std::vector<std::string> data_types = {"int", "str"};
 
+Token check_string(std::string str) {
+    if (std::binary_search(data_types.begin(), data_types.end(), str)) {
+        return Token("datatype", str);
+    }
+
+    if (str == "'" || str == "\"") {
+        return Token("punctuator", str);
+    }
+
+    if (str.find_first_not_of("1234567890") == std::string::npos) {
+        return Token("number", str);
+    }
+
+    if (str == "=") {
+        return Token("assignment", "null");
+    }
+
+    if (str == "\n") {
+        return Token("endstatement", "null");
+    }
+
+    return Token("string", str);
+}
+
 std::vector<Token> tokenize(std::string &code) {
 
     std::vector<Token> all_tokens;
     std::vector<std::string> strings;
     std::vector<char> current;
 
-    bool punct = false;
 
     for (int k = 0; k < code.length(); k++) {
         std::string i(1, code[k]);
         if (i == " " || i == "\n") {
             if (current.size() != 0) {
-                strings.push_back(std::string(current.begin(), current.end()));
-                current.clear();
+                all_tokens.push_back(check_string(std::string(current.begin(), current.end())));
             }
+            current.clear();
             if (i == "\n") {
-                strings.push_back("\n");
-                current.clear();
+                all_tokens.push_back(Token("endstatement", "null"));
             }
-            punct = false;
+            continue;
+        }
+
+        if ((i == "'" || i == "\"")) {
+            if (current.size() != 0) {
+                all_tokens.push_back(check_string(std::string(current.begin(), current.end())));
+            }
+            current.clear();
+            all_tokens.push_back(check_string(std::string(i)));
             continue;
         }
 
         current.push_back(*i.data());
         continue;
-    }
-
-    if (current.size() != 0) {
-        strings.push_back(std::string(current.begin(), current.end()));
-        current.clear();
-    }
-    if (strings[strings.size() - 1] != "\n") {
-        strings.push_back("\n");
-    }
-
-    for (auto i : strings) {
-        
-        if (std::binary_search(data_types.begin(), data_types.end(), i)) {
-            all_tokens.push_back(Token("datatype", i));
-            continue;
-        }
-
-        if ((i[0] == '\'' || i[0] == '"') && (i[i.size()-1] == '\'' || i[i.size()-1] == '"')) {
-            auto i2 = i;
-            all_tokens.push_back(Token("punctuator", std::string(1, i[0])));
-            i2.erase(std::remove(i2.begin(), i2.end(), '"'), i2.end());
-            i2.erase(std::remove(i2.begin(), i2.end(), '\''), i2.end());
-            all_tokens.push_back(Token("string", i2));
-            all_tokens.push_back(Token("punctuator", std::string(1, i[i.size()-1])));
-            continue;
-        }
-
-        if (i.find_first_not_of("0123456789") == std::string::npos) {
-            all_tokens.push_back(Token("number", i));
-            continue;
-        }
-
-        if (i == "=") {
-            all_tokens.push_back(Token("assignment", i));
-            continue;
-        }
-
-        if (i == "\n") {
-            all_tokens.push_back(Token("endstatement", "null"));
-            continue;
-        }
-
-        all_tokens.push_back(Token("string", i));
     }
 
     return all_tokens;
