@@ -17,6 +17,8 @@ jobs:
       run: |
         cd c++/
         make
+    - name: compile
+      run: ./main file.tnl
         
   build-mac:
     
@@ -28,28 +30,8 @@ jobs:
       run: |
         cd c++/
         make
-        
-  test-linux:
-  
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v3
     - name: compile
-      run: |
-        cd c++
-        ./main file.tnl
-        
-  test-mac:
-  
-    runs-on: macos-latest
-    
-    steps:
-    - uses: actions/checkout@v3
-    - name: compile
-      run: |
-        cd c++/
-        ./main file.tnl
+      run: ./main file.tnl
     
     
     
