@@ -1,0 +1,39 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-linux:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: make
+      run: |
+        cd c++/
+        make main
+    - name: compile
+      run: |
+        cd c++/
+        ./main file.tnl
+        
+        
+  build-macos:
+
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: make
+      run: |
+        cd c++/
+        make main
+    - name: compile
+      run: |
+        cd c++/
+        ./main file.tnl
