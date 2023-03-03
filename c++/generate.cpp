@@ -4,6 +4,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 void gencode(std::vector<std::map<std::string, std::string>> &ast) {
     std::vector<std::string> intdecs;
