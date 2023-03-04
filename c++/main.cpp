@@ -44,10 +44,10 @@ int main(int argc, char *argv[]) {
         std::vector<Token> tokens = tokenize(code);
         // printtokens(tokens);
         // Do magic to get an ast and check syntax
-        std::vector<std::map<std::string, std::string>> ast = parse(tokens);
+        //std::vector<std::map<std::string, std::string>> ast = parse(tokens);
         // printast(ast);
         // Generate C code because why not
-        gencode(ast);
+        //gencode(ast);
         return 0;
     }
     return 0;

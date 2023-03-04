@@ -67,7 +67,11 @@ parse(std::vector<Token> tokens) {
             }
         }
 
-        p2t = {tokens[k - 2], tokens[k - 1]};
+        if (k > 3) {
+            p2t = {tokens[k - 2], tokens[k - 1]};
+        } else {
+            p2t = {};
+        }
 
         if (tokens[k].type == "endstatement") {
             line++;

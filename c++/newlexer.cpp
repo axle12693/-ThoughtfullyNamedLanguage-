@@ -40,12 +40,12 @@ std::vector<Token> tokenize(std::string &code) {
     std::vector<std::string> strings;
     std::vector<char> current;
 
-
     for (int k = 0; k < code.length(); k++) {
         std::string i(1, code[k]);
         if (i == " " || i == "\n") {
             if (current.size() != 0) {
-                all_tokens.push_back(check_string(std::string(current.begin(), current.end())));
+                all_tokens.push_back(
+                    check_string(std::string(current.begin(), current.end())));
             }
             current.clear();
             if (i == "\n") {
@@ -56,7 +56,8 @@ std::vector<Token> tokenize(std::string &code) {
 
         if ((i == "'" || i == "\"")) {
             if (current.size() != 0) {
-                all_tokens.push_back(check_string(std::string(current.begin(), current.end())));
+                all_tokens.push_back(
+                    check_string(std::string(current.begin(), current.end())));
             }
             current.clear();
             all_tokens.push_back(check_string(std::string(i)));
