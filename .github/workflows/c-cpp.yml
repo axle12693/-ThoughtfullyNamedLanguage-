@@ -18,7 +18,9 @@ jobs:
         cd c++/
         make main
     - name: compile
+      needs: make
       run: |
+        ulimit -a
         cd c++/
         ./main file.tnl
         
@@ -34,6 +36,7 @@ jobs:
         cd c++/
         make main
     - name: compile
+      needs: make
       run: |
         cd c++/
         ./main file.tnl
