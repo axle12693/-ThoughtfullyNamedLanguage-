@@ -3,3 +3,5 @@
 .vscode/settings.json
 c++/main
 .github/
+*.idx
+c++/compile_commands.json
