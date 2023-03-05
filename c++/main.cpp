@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
         std::vector<std::map<std::string, std::string>> ast = parse(tokens);
         // printast(ast);
         // Generate C code because why not
-        //gencode(ast);
+        gencode(ast);
         return 0;
     }
     return 0;
