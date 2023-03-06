@@ -53,30 +53,23 @@ def check_syntax(n3t, line):
         raise error.TNLSyntax(f"\n\n Unmatched quotes on line {line}")
 
 
-def parse(tokenlist: list[Token]):
-    tokens = tokenlist
+def parse(tokens: list[Token]):
+    global allvar, intvar, strvar
     ast = []
-
-    # Next 3 tokens
-    n3t: list[Token] = None
-    # Previous 2 tokens
-    p2t: list[Token] = None
 
     skip2: bool = False
     line = 1
 
     num_tokens = len(tokens)
 
-    for k in range(num_tokens):
-        global allvar, intvar, strvar
-        tslice = k
+    for i in range(num_tokens):
         allvar = intvar+strvar
 
-        n3t = tokens[tslice:min(tslice + 4, num_tokens)]
+        n3t = tokens[i:min(i + 4, num_tokens)]
 
-        p2t = [tokens[tslice-2], tokens[tslice-1]]
+        p2t = [tokens[i-2], tokens[i-1]]
 
-        if tokens[tslice].type == 'endstatement':
+        if tokens[i].type == 'endstatement':
             line += 1
         if skip2:
             skip2 = False
@@ -89,19 +82,21 @@ def parse(tokenlist: list[Token]):
             elif n3t[0].val == 'str':
                 strvar.append(n3t[1].val)
                 vardec(ast, n3t[0].pos[0], n3t[1].pos[1], 'str', n3t[1])
+            else:
+                raise Exception("Unspecified Exception type - decide later")
             continue
 
-        if n3t[0].type == 'string' and n3t[1].type == 'assignment' and n3t[2].type == 'number':
-            assign(ast, n3t[0].pos[0], n3t[2].pos[1], n3t[0], n3t[2], line)
-            continue
-
-        if n3t[0].type == 'string' and n3t[1].type == 'assignment' and n3t[2].type == 'punctuator':
-            skip2 = True
+        if n3t[0].type == 'string' and n3t[1].type == 'assignment':
+            if n3t[2].type == 'number':
+                assign(ast, n3t[0].pos[0], n3t[2].pos[1], n3t[0], n3t[2], line)
+            elif n3t[2].type == 'punctuator':
+                skip2 = True
+            else:
+                raise Exception("Unspecified Exception type - decide later")
             continue
 
         if n3t[0].type == 'punctuator' and n3t[1].type == 'string' and n3t[2].type == 'punctuator' and n3t[0].val == n3t[2].val:
-            rawstr = Token('rawstring', '"' +
-                           n3t[1].val+'"', (n3t[0].pos[0], n3t[2].pos[1]))
+            rawstr = Token('rawstring', '"' + n3t[1].val+'"', (n3t[0].pos[0], n3t[2].pos[1]))
             assign(ast, rawstr.pos[0], rawstr.pos[1], p2t[0], rawstr, line)
             continue
 
