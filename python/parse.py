@@ -63,14 +63,13 @@ def parse(tokens: list[Token]):
     num_tokens = len(tokens)
 
     for i in range(num_tokens):
-        allvar = intvar+strvar
-
+        allvar = intvar + strvar
         n3t = tokens[i:min(i + 4, num_tokens)]
-
         p2t = [tokens[i-2], tokens[i-1]]
 
         if tokens[i].type == 'endstatement':
             line += 1
+
         if skip2:
             skip2 = False
             continue
@@ -100,8 +99,6 @@ def parse(tokens: list[Token]):
             assign(ast, rawstr.pos[0], rawstr.pos[1], p2t[0], rawstr, line)
             continue
 
-        # Syntax checking
         check_syntax(n3t, line)
-
 
     return ast
