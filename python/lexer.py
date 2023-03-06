@@ -31,12 +31,11 @@ def tokenize(code: str) -> list[Token]:
 
     for k, i in enumerate(code):
         if i.isspace() or i == '\n':
-            for j in data_types:
-                if ''.join(current_string) == j:
-                    all_tokens.append(Token(token_types[0], ''.join(
-                        current_string), (string_pos[0], k)))
-                    current_string = []
-                    continue
+            temp_string = ''.join(current_string)
+            if temp_string in data_types:
+                token = Token(token_types[0], temp_string, (string_pos[0], k))
+                all_tokens.append(token)
+                current_string = []
             if len(current_string) != 0:
                 all_tokens.append(Token(token_types[4], ''.join(
                     current_string), (string_pos[0], k)))

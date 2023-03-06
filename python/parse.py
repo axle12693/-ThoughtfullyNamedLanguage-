@@ -48,22 +48,14 @@ def parse(tokenlist: list[Token]):
     skip2: bool = False
     line = 1
 
-    for k in range(len(tokens)):
+    num_tokens = len(tokens)
+
+    for k in range(num_tokens):
+        global allvar, intvar, strvar
         tslice = k
-        global allvar
         allvar = intvar+strvar
 
-        try:
-            n3t = [tokens[tslice], tokens[tslice+1],
-                   tokens[tslice+2], tokens[tslice+3]]
-        except IndexError:
-            try:
-                n3t = [tokens[tslice], tokens[tslice+1], tokens[tslice+2]]
-            except IndexError:
-                try:
-                    n3t = [tokens[tslice], tokens[tslice+1]]
-                except IndexError:
-                    n3t = [tokens[tslice]]
+        n3t = tokens[tslice:min(tslice + 4, num_tokens)]
 
         p2t = [tokens[tslice-2], tokens[tslice-1]]
 
