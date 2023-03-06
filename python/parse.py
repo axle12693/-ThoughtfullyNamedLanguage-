@@ -8,14 +8,14 @@ strvar: list[str] = []
 allvar: list[str] = []
 
 
-def vardec(d: list, start: int, end: int, type: str, value: Token) -> None:
-    d2 = {}
-    d2['type'] = 'VariableDeclaration'
-    d2['start'] = start
-    d2['end'] = end
-    d2['datatype'] = type
-    d2['value'] = value.val
-    d.append(d2)
+def vardec(d: list, start: int, end: int, datatype: str, value: Token) -> None:
+    d.append({
+        'type': 'VariableDeclaration',
+        'start': start,
+        'end': end,
+        'datatype': datatype,
+        'value': value.val
+    })
 
 
 def assign(d: list, start: int, end: int, name: Token, value: Token, line: int) -> None:
