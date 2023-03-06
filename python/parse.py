@@ -19,16 +19,15 @@ def vardec(d: list, start: int, end: int, datatype: str, value: Token) -> None:
 
 
 def assign(d: list, start: int, end: int, name: Token, value: Token, line: int) -> None:
-
     if name.val not in allvar:
-        raise error.TNLUndeclaredVariable(
-            f"\n\nVariable {name.val} assigned value before declaration on line {line}.")
-
-    d2 = {}
-    d2['type'] = 'VariableAssignment'
-    d2['start'] = start
-    d2['end'] = end
-    d2['name'] = name.val
+        raise error.TNLUndeclaredVariable(f"\n\nVariable {name.val} assigned value before declaration on line {line}.")
+    d2 = {
+        'type': 'VariableAssignment',
+        'start': start,
+        'end': end,
+        'name': name.val
+    }
+    
     try:
         d2['value'] = int(value.val)
     except ValueError:
