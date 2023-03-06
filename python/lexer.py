@@ -75,19 +75,13 @@ def tokenize(code: str) -> list[Token]:
             current_string.append(i)
             continue
         if i in '\'"':
-            if not punct:
-                punct = True
-                all_tokens.append(Token(token_types[2], i, (k, k+1)))
-                continue
             if punct:
-                punct = False
-                all_tokens.append(Token(token_types[4], ''.join(
-                    current_string), (string_pos[0], k)))
+                all_tokens.append(Token(token_types[4], ''.join(current_string), (string_pos[0], k)))
                 current_string = []
-                all_tokens.append(Token(token_types[2], i, (k, k+1)))
-                continue
-        if True:
-            raise TNLUnidentifiedToken(f"{i}")
+            punct = not punct
+            all_tokens.append(Token(token_types[2], i, (k, k+1)))
+            continue
+        raise TNLUnidentifiedToken(f"{i}")
 
     if len(current_string) != 0:
         all_tokens.append(Token(token_types[4], ''.join(
