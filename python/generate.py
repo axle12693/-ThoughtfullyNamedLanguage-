@@ -2,28 +2,28 @@ import os
 
 
 def generate_c_code(ast):
-    intdecs = set()
-    mallocs = set()
+    int_declarations = set()
+    malloc_statements = set()
     code = "#include <stdlib.h>\n#include <string.h>\n\nint main() {"
 
-    for i in ast:
-        if i['type'] == 'VariableDeclaration':
-            if i['datatype'] == 'int':
-                if i['value'] not in intdecs:
-                    code += f"int {i['value']};"
-                    intdecs.add(i['value'])
-            elif i['datatype'] == 'str':
-                if i['value'] not in mallocs:
-                    code += f"char *{i['value']} = malloc(256);"
-                    mallocs.add(i['value'])
-        elif i['type'] == 'VariableAssignment':
-            if isinstance(i['value'], str):
-                code += f"strcpy({i['name']}, {i['value']});"
+    for node in ast:
+        if node['type'] == 'VariableDeclaration':
+            if node['datatype'] == 'int':
+                if node['value'] not in int_declarations:
+                    code += f"int {node['value']};"
+                    int_declarations.add(node['value'])
+            elif node['datatype'] == 'str':
+                if node['value'] not in malloc_statements:
+                    code += f"char *{node['value']} = malloc(256);"
+                    malloc_statements.add(node['value'])
+        elif node['type'] == 'VariableAssignment':
+            if isinstance(node['value'], str):
+                code += f"strcpy({node['name']}, {node['value']});"
             else:
-                code += f"{i['name']} = {i['value']};"
+                code += f"{node['name']} = {node['value']};"
 
-    for var_name in mallocs:
-        code += f"free({var_name});"
+    for variable in malloc_statements:
+        code += f"free({variable});"
 
     code += "return 0;}"
     return code
