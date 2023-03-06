@@ -57,36 +57,32 @@ def tokenize(code: str) -> list[Token]:
                 current_string = []
                 current_number = []
             punct = False
-            continue
-        if i in '+-*/':
+        elif i in '+-*/':
             all_tokens.append(Token(token_types[1], i, (k, k+1)))
-            continue
-        if i == '=':
+        elif i == '=':
             all_tokens.append(Token(token_types[6], 'null', (k, k+1)))
-            continue
-        if i.isdigit():
+        elif i.isdigit():
             if len(current_number) == 0:
                 number_pos[0] = k
             current_number.append(i)
-            continue
-        if i in string.ascii_letters:
+        elif i in string.ascii_letters:
             if len(current_string) == 0:
                 string_pos[0] = k
             current_string.append(i)
-            continue
-        if i in '\'"':
+        elif i in '\'"':
             if punct:
                 all_tokens.append(Token(token_types[4], ''.join(current_string), (string_pos[0], k)))
                 current_string = []
             punct = not punct
             all_tokens.append(Token(token_types[2], i, (k, k+1)))
             continue
-        raise TNLUnidentifiedToken(f"{i}")
+        else:
+            raise TNLUnidentifiedToken(f"{i}")
 
-    if len(current_string) != 0:
+    if current_string:
         all_tokens.append(Token(token_types[4], ''.join(
             current_string), (string_pos[0], k)))
-    if len(current_number) != 0:
+    if current_number:
         all_tokens.append(Token(token_types[3], ''.join(
             current_number), (number_pos[0], k)))
     if all_tokens[-1].type != 'endstatement':
