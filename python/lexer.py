@@ -31,21 +31,29 @@ def tokenize(code: str) -> list[Token]:
 
     for k, i in enumerate(code):
         if i.isspace() or i == '\n':
-            temp_string = ''.join(current_string)
-            if temp_string in data_types:
-                token = Token(token_types[0], temp_string, (string_pos[0], k))
-                all_tokens.append(token)
+            if ''.join(current_string) in data_types:
+                token_type = token_types[0]
+                token_value = ''.join(current_string)
+                token_pos = (string_pos[0], k)
+                all_tokens.append(Token(token_type, token_value, token_pos))
                 current_string = []
-            if len(current_string) != 0:
-                all_tokens.append(Token(token_types[4], ''.join(
-                    current_string), (string_pos[0], k)))
+            if current_string:
+                token_type = token_types[4]
+                token_value = ''.join(current_string)
+                token_pos = (string_pos[0], k)
+                all_tokens.append(Token(token_type, token_value, token_pos))
                 current_string = []
-            if len(current_number) != 0:
-                all_tokens.append(Token(token_types[3], ''.join(
-                    current_number), (number_pos[0], k)))
+            if current_number:
+                token_type = token_types[3]
+                token_value = ''.join(current_number)
+                token_pos = (number_pos[0], k)
+                all_tokens.append(Token(token_type, token_value, token_pos))
                 current_number = []
             if i == '\n':
-                all_tokens.append(Token(token_types[5], 'null', (k, k)))
+                token_type = token_types[5]
+                token_value = 'null'
+                token_pos = (k, k)
+                all_tokens.append(Token(token_type, token_value, token_pos))
                 current_string = []
                 current_number = []
             punct = False
