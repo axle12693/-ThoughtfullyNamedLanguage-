@@ -20,18 +20,16 @@ data_types = [
 
 
 def tokenize(code: str) -> list[Token]:
-
-    all_tokens: list[Token] = []
+    all_tokens = []
     current_string = []
     string_pos = 0
     current_number = []
     number_pos = 0
-
     punct = False
 
     for k, i in enumerate(code):
         if i.isspace() or i == '\n':
-            if ''.join(current_string) in data_types:
+            if current_string and ''.join(current_string) in data_types:
                 token_type = token_types[0]
                 token_value = ''.join(current_string)
                 token_pos = (string_pos, k)
@@ -62,11 +60,11 @@ def tokenize(code: str) -> list[Token]:
         elif i == '=':
             all_tokens.append(Token(token_types[6], 'null', (k, k+1)))
         elif i.isdigit():
-            if len(current_number) == 0:
+            if not current_number:
                 number_pos = k
             current_number.append(i)
         elif i in string.ascii_letters:
-            if len(current_string) == 0:
+            if not current_string:
                 string_pos = k
             current_string.append(i)
         elif i in '\'"':
@@ -75,17 +73,14 @@ def tokenize(code: str) -> list[Token]:
                 current_string = []
             punct = not punct
             all_tokens.append(Token(token_types[2], i, (k, k+1)))
-            continue
         else:
             raise TNLUnidentifiedToken(f"{i}")
 
     if current_string:
-        all_tokens.append(Token(token_types[4], ''.join(
-            current_string), (string_pos, k)))
+        all_tokens.append(Token(token_types[4], ''.join(current_string), (string_pos, k)))
     if current_number:
-        all_tokens.append(Token(token_types[3], ''.join(
-            current_number), (number_pos, k)))
-    if all_tokens[-1].type != 'endstatement':
+        all_tokens.append(Token(token_types[3], ''.join(current_number), (number_pos, k)))
+    if all_tokens and all_tokens[-1].type != 'endstatement':
         all_tokens.append(Token(token_types[5], 'null', (k+1, k+1)))
 
     return all_tokens
