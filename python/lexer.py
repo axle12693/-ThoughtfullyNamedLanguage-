@@ -23,9 +23,9 @@ def tokenize(code: str) -> list[Token]:
 
     all_tokens: list[Token] = []
     current_string = []
-    string_pos = [0]
+    string_pos = 0
     current_number = []
-    number_pos = [0]
+    number_pos = 0
 
     punct = False
 
@@ -34,19 +34,19 @@ def tokenize(code: str) -> list[Token]:
             if ''.join(current_string) in data_types:
                 token_type = token_types[0]
                 token_value = ''.join(current_string)
-                token_pos = (string_pos[0], k)
+                token_pos = (string_pos, k)
                 all_tokens.append(Token(token_type, token_value, token_pos))
                 current_string = []
             if current_string:
                 token_type = token_types[4]
                 token_value = ''.join(current_string)
-                token_pos = (string_pos[0], k)
+                token_pos = (string_pos, k)
                 all_tokens.append(Token(token_type, token_value, token_pos))
                 current_string = []
             if current_number:
                 token_type = token_types[3]
                 token_value = ''.join(current_number)
-                token_pos = (number_pos[0], k)
+                token_pos = (number_pos, k)
                 all_tokens.append(Token(token_type, token_value, token_pos))
                 current_number = []
             if i == '\n':
@@ -63,15 +63,15 @@ def tokenize(code: str) -> list[Token]:
             all_tokens.append(Token(token_types[6], 'null', (k, k+1)))
         elif i.isdigit():
             if len(current_number) == 0:
-                number_pos[0] = k
+                number_pos = k
             current_number.append(i)
         elif i in string.ascii_letters:
             if len(current_string) == 0:
-                string_pos[0] = k
+                string_pos = k
             current_string.append(i)
         elif i in '\'"':
             if punct:
-                all_tokens.append(Token(token_types[4], ''.join(current_string), (string_pos[0], k)))
+                all_tokens.append(Token(token_types[4], ''.join(current_string), (string_pos, k)))
                 current_string = []
             punct = not punct
             all_tokens.append(Token(token_types[2], i, (k, k+1)))
@@ -81,10 +81,10 @@ def tokenize(code: str) -> list[Token]:
 
     if current_string:
         all_tokens.append(Token(token_types[4], ''.join(
-            current_string), (string_pos[0], k)))
+            current_string), (string_pos, k)))
     if current_number:
         all_tokens.append(Token(token_types[3], ''.join(
-            current_number), (number_pos[0], k)))
+            current_number), (number_pos, k)))
     if all_tokens[-1].type != 'endstatement':
         all_tokens.append(Token(token_types[5], 'null', (k+1, k+1)))
 
