@@ -1,44 +1,45 @@
-from os import system, name
+import os
 
 
-def gencode(ast: list[dict]) -> None:
-    intdecs = []
-    mallocs = []
-
+def generate_c_code(ast):
+    int_declarations = set()
+    malloc_statements = set()
     code = "#include <stdlib.h>\n#include <string.h>\n\nint main() {"
-    for i in ast:
-        match i['type']:
 
-            case 'VariableDeclaration':
+    for node in ast:
+        if node['type'] == 'VariableDeclaration':
+            if node['datatype'] == 'int':
+                if node['value'] not in int_declarations:
+                    code += f"int {node['value']};"
+                    int_declarations.add(node['value'])
+            elif node['datatype'] == 'str':
+                if node['value'] not in malloc_statements:
+                    code += f"char *{node['value']} = malloc(256);"
+                    malloc_statements.add(node['value'])
+        elif node['type'] == 'VariableAssignment':
+            if isinstance(node['value'], str):
+                code += f"strcpy({node['name']}, {node['value']});"
+            else:
+                code += f"{node['name']} = {node['value']};"
 
-                match i['datatype']:
-
-                    case 'int':
-                        if i['value'] not in intdecs:
-                            code += f"int {i['value']};"
-                            intdecs.append(i['value'])
-
-                    case 'str':
-                        if i['value'] not in mallocs:
-                            code += f"char *{i['value']} = malloc(256);"
-                            mallocs.append(i['value'])
-
-            case 'VariableAssignment':
-
-                if type(i['value']) == str:
-                    code += f"strcpy({i['name']}, {i['value']});"
-                else:
-                    code += f"{i['name']} = {i['value']};"
-
-    for i in mallocs:
-        code += f"free({i});"
+    for variable in malloc_statements:
+        code += f"free({variable});"
 
     code += "return 0;}"
+    return code
 
-    with open('output.c', 'w') as cfile:
+
+def write_to_file(filename, code):
+    with open(filename, 'w') as cfile:
         cfile.write(code)
 
-    if name != 'nt':
-        system(f"cc output.c")
 
-    return None
+def compile_c_file():
+    if os.name != 'nt':
+        os.system("cc output.c")
+
+
+def gencode(ast):
+    code = generate_c_code(ast)
+    write_to_file('output.c', code)
+    compile_c_file()
