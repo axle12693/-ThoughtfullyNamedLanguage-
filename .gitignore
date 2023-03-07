@@ -5,3 +5,4 @@ c++/main
 .github/
 *.idx
 c++/compile_commands.json
+c++/output.c

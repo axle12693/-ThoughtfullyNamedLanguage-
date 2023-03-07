@@ -1,6 +1,6 @@
 #include "error.cpp"
 #include "objects.cpp"
-// #include "lexer.cpp"
+//#include "newlexer.cpp"
 #include <algorithm>
 #include <iostream>
 #include <map>
@@ -8,9 +8,11 @@
 #include <vector>
 
 std::vector<std::string> allvar;
+std::map<std::string, std::string> vt_to_dt = {{"number", "int"}, {"string", "str"}, {"rawstring", "str"}};
 
 void vardec(std::vector<std::map<std::string, std::string>> &d,
             std::string type, Token &value) {
+
     std::map<std::string, std::string> d2;
     d2["type"] = "VariableDeclaration";
     d2["datatype"] = type;
@@ -21,8 +23,9 @@ void vardec(std::vector<std::map<std::string, std::string>> &d,
 void varassign(std::vector<std::map<std::string, std::string>> &d,
                std::string type, Token &name, Token &value, int line) {
 
-    if (std::find(allvar.begin(), allvar.end(), name.val) ==
-        allvar.end()) {
+
+    auto varpos = std::find(allvar.begin(), allvar.end(), name.val);
+    if (varpos == allvar.end()) {
         try {
             throw TNLUndelcaredVariable(
                 "\n\nVariable " + std::string(name.val) +
@@ -30,6 +33,15 @@ void varassign(std::vector<std::map<std::string, std::string>> &d,
                 std::to_string(line) + ".");
         } catch (const std::exception &e) {
             std::cerr << e.what() << '\n';
+            std::exit(1);
+        }
+    } else if (allvar[(varpos-allvar.begin())+1] != type) {
+        
+        try {
+            throw TNLMismatchedType("\n\nThe variable "+name.val+" has the type "+allvar[(varpos-allvar.begin())+1]+", but was assigned type "+type+".");
+        } catch (TNLMismatchedType &e) {
+            std::cerr << e.what() << std::endl;
+            std::exit(1);
         }
     }
 
@@ -40,6 +52,8 @@ void varassign(std::vector<std::map<std::string, std::string>> &d,
     d2["value"] = value.val;
     d.push_back(d2);
 }
+
+void operation(std::vector<std::map<std::string, std::string>> &d, Token &val);
 
 std::vector<std::map<std::string, std::string>>
 parse(std::vector<Token> tokens) {
@@ -84,11 +98,8 @@ parse(std::vector<Token> tokens) {
 
         if (n3t[0].type == "datatype" && n3t[1].type == "string") {
             allvar.push_back(n3t[1].val);
-            if (n3t[0].val == "int") {
-                vardec(ast, "int", n3t[1]);
-            } else if (n3t[0].val == "str") {
-                vardec(ast, "str", n3t[1]);
-            }
+            allvar.push_back(n3t[0].val);
+            vardec(ast, n3t[0].val, n3t[1]);
             continue;
         }
 
@@ -123,6 +134,7 @@ parse(std::vector<Token> tokens) {
                     std::to_string(line) + ".");
             } catch (TNLSyntax &e) {
                 std::cerr << e.what() << '\n';
+                std::exit(1);
             }
         }
 
@@ -136,6 +148,7 @@ parse(std::vector<Token> tokens) {
                     std::to_string(line) + ".");
             } catch (TNLSyntax &e) {
                 std::cerr << e.what() << '\n';
+                std::exit(1);
             }
         }
 
@@ -146,6 +159,7 @@ parse(std::vector<Token> tokens) {
                     std::to_string(line) + ".");
             } catch (TNLSyntax &e) {
                 std::cerr << e.what() << '\n';
+                std::exit(1);
             }
         }
 
@@ -156,6 +170,7 @@ parse(std::vector<Token> tokens) {
                                 std::to_string(line) + ".");
             } catch (TNLSyntax &e) {
                 std::cerr << e.what() << '\n';
+                std::exit(1);
             }
         }
 
@@ -167,6 +182,7 @@ parse(std::vector<Token> tokens) {
                                 std::to_string(line) + ".");
             } catch (TNLSyntax &e) {
                 std::cerr << e.what() << '\n';
+                std::exit(1);
             }
         }
     }

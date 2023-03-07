@@ -27,7 +27,7 @@ void gencode(std::vector<std::map<std::string, std::string>> &ast) {
             if (i["datatype"] == "str" &&
                 std::find(mallocs.begin(), mallocs.end(), i["value"]) ==
                     mallocs.end()) {
-                code += ("char *" + i["value"] + " = malloc(256);");
+                code += ("char *" + i["value"] + " = (char*)malloc(256);");
                 mallocs.push_back(i["value"]);
                 continue;
             }

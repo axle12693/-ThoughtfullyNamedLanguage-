@@ -1,3 +1,4 @@
+#include <exception>
 #include <iostream>
 
 #pragma once
@@ -31,6 +32,17 @@ class TNLUnidentifiedToken : public std::exception {
 
   public:
     TNLUnidentifiedToken(std::string msg) : message(msg) {}
+
+    std::string what() { return message; }
+};
+
+class TNLMismatchedType : public std::exception {
+    // Used when a variable is assigned a value that's different than its type
+  private:
+    std::string message;
+
+  public:
+    TNLMismatchedType(std::string msg) : message(msg) {}
 
     std::string what() { return message; }
 };

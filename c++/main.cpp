@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
         // printtokens(tokens);
         // Do magic to get an ast and check syntax
         std::vector<std::map<std::string, std::string>> ast = parse(tokens);
-        // printast(ast);
+        printast(ast);
         // Generate C code because why not
         gencode(ast);
         return 0;
