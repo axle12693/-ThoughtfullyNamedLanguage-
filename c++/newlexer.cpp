@@ -46,7 +46,6 @@ Token check_string(std::string str) {
         return Token("string", str);
     }
 
-    std::cout << "lol no" << std::endl;
     try {
         throw TNLUnidentifiedToken("\n\nUnidentified token " + str + ".");
     } catch (TNLUnidentifiedToken &e) {

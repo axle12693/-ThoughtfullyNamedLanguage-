@@ -6,3 +6,5 @@ c++/main
 *.idx
 c++/compile_commands.json
 c++/output.c
+*.c
+c++/time.sh

@@ -6,13 +6,14 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <set>
 
-std::vector<std::string> allvar;
-std::map<std::string, std::string> vt_to_dt = {{"number", "int"}, {"string", "str"}, {"rawstring", "str"}};
+std::map<std::string, std::string> allvar;
 
 void vardec(std::vector<std::map<std::string, std::string>> &d,
             std::string type, Token &value) {
 
+    allvar[value.val] = type;
     std::map<std::string, std::string> d2;
     d2["type"] = "VariableDeclaration";
     d2["datatype"] = type;
@@ -24,8 +25,7 @@ void varassign(std::vector<std::map<std::string, std::string>> &d,
                std::string type, Token &name, Token &value, int line) {
 
 
-    auto varpos = std::find(allvar.begin(), allvar.end(), name.val);
-    if (varpos == allvar.end()) {
+    if (allvar.find(name.val) == allvar.end()) {
         try {
             throw TNLUndelcaredVariable(
                 "\n\nVariable " + std::string(name.val) +
@@ -35,15 +35,16 @@ void varassign(std::vector<std::map<std::string, std::string>> &d,
             std::cerr << e.what() << '\n';
             std::exit(1);
         }
-    } else if (allvar[(varpos-allvar.begin())+1] != type) {
-        
+    }
+    if (allvar[name.val] != type) {
         try {
-            throw TNLMismatchedType("\n\nThe variable "+name.val+" has the type "+allvar[(varpos-allvar.begin())+1]+", but was assigned type "+type+".");
+            throw TNLMismatchedType("\n\nThe variable "+name.val+" has the type "+allvar[name.val]+", but was assigned type "+type+".");
         } catch (TNLMismatchedType &e) {
             std::cerr << e.what() << std::endl;
             std::exit(1);
         }
     }
+    
 
     std::map<std::string, std::string> d2;
     d2["type"] = "VariableAssignment";
@@ -97,8 +98,6 @@ parse(std::vector<Token> tokens) {
         }
 
         if (n3t[0].type == "datatype" && n3t[1].type == "string") {
-            allvar.push_back(n3t[1].val);
-            allvar.push_back(n3t[0].val);
             vardec(ast, n3t[0].val, n3t[1]);
             continue;
         }
@@ -125,8 +124,7 @@ parse(std::vector<Token> tokens) {
         }
 
         if (n3t[0].type == "datatype" &&
-            (std::find(allvar.begin(), allvar.end(), n3t[1].val) ==
-             allvar.end()) &&
+            (allvar.find(n3t[1].val) == allvar.end()) &&
             n3t[1].type != "endstatement") {
             try {
                 throw TNLSyntax(
@@ -139,8 +137,7 @@ parse(std::vector<Token> tokens) {
         }
 
         if (n3t[0].type == "datatype" &&
-            (std::find(allvar.begin(), allvar.end(), n3t[2].val) ==
-             allvar.end()) &&
+            (allvar.find(n3t[2].val) == allvar.end()) &&
             n3t[1].type == "number") {
             try {
                 throw TNLSyntax(
