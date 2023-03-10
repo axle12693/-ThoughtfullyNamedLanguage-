@@ -15,11 +15,13 @@ std::vector<std::string> data_types = {"int", "str"};
 
 std::string numbers = "0123456789";
 std::string letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-std::string operators = "*+-/";
+std::vector<std::string> operators = {"*", "+", "-", "/"};
 
 Token check_string(std::string str) {
-    if (std::binary_search(data_types.begin(), data_types.end(), str)) {
-        return Token("datatype", str);
+    if (str.length() > 1) {
+        if (std::binary_search(data_types.begin(), data_types.end(), str)) {
+            return Token("datatype", str);
+        }
     }
 
     if (str == "'" || str == "\"") {
@@ -34,7 +36,7 @@ Token check_string(std::string str) {
         return Token("assignment", "null");
     }
 
-    if (str.find_first_not_of(operators) == std::string::npos) {
+    if (std::binary_search(operators.begin(), operators.end(), str)) {
         return Token("operator", str);
     }
 

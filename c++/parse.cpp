@@ -1,12 +1,12 @@
 #include "error.cpp"
 #include "objects.cpp"
-//#include "newlexer.cpp"
+// #include "newlexer.cpp"
 #include <algorithm>
 #include <iostream>
 #include <map>
+#include <set>
 #include <string>
 #include <vector>
-#include <set>
 
 std::map<std::string, std::string> allvar;
 
@@ -24,7 +24,6 @@ void vardec(std::vector<std::map<std::string, std::string>> &d,
 void varassign(std::vector<std::map<std::string, std::string>> &d,
                std::string type, Token &name, Token &value, int line) {
 
-
     if (allvar.find(name.val) == allvar.end()) {
         try {
             throw TNLUndelcaredVariable(
@@ -38,13 +37,15 @@ void varassign(std::vector<std::map<std::string, std::string>> &d,
     }
     if (allvar[name.val] != type) {
         try {
-            throw TNLMismatchedType("\n\nThe variable "+name.val+" has the type "+allvar[name.val]+", but was assigned type "+type+".");
+            throw TNLMismatchedType("\n\nThe variable " + name.val +
+                                    " has the type " + allvar[name.val] +
+                                    ", but was assigned type " + type +
+                                    " on line " + std::to_string(line) + ".");
         } catch (TNLMismatchedType &e) {
             std::cerr << e.what() << std::endl;
             std::exit(1);
         }
     }
-    
 
     std::map<std::string, std::string> d2;
     d2["type"] = "VariableAssignment";
@@ -54,16 +55,23 @@ void varassign(std::vector<std::map<std::string, std::string>> &d,
     d.push_back(d2);
 }
 
-void operation(std::vector<std::map<std::string, std::string>> &d, Token &val);
+void operation(std::vector<std::map<std::string, std::string>> &d, Token &op,
+               Token &v1, Token &v2, Token &v3) {
+    std::map<std::string, std::string> d2;
+    d2["type"] = "Operation";
+    d2["operator"] = op.val;
+    d2["v1"] = v1.val;
+    d2["v2"] = v2.val;
+    d2["v3"] = v3.val;
+    d.push_back(d2);
+};
 
 std::vector<std::map<std::string, std::string>>
-parse(std::vector<Token> tokens) {
+parse(std::vector<Token> &tokens) {
     static std::vector<std::map<std::string, std::string>> ast = {};
 
     std::vector<Token> n3t;
     std::vector<Token> p2t;
-
-    bool skip2 = false;
     int line = 1;
 
     for (int k = 0; k < tokens.size(); k++) {
@@ -92,33 +100,30 @@ parse(std::vector<Token> tokens) {
             line++;
             continue;
         }
-        if (skip2) {
-            skip2 = false;
-            continue;
-        }
 
-        if (n3t[0].type == "datatype" && n3t[1].type == "string") {
+        if (n3t[0].type == "datatype" && n3t[1].type == "string" &&
+            n3t[2].type == "endstatement") {
             vardec(ast, n3t[0].val, n3t[1]);
             continue;
         }
 
         if (n3t[0].type == "string" && n3t[1].type == "assignment" &&
-            n3t[2].type == "number") {
+            n3t[2].type == "number" && n3t[3].type == "endstatement") {
             varassign(ast, "int", n3t[0], n3t[2], line);
             continue;
         }
 
-        if (n3t[0].type == "string" && n3t[1].type == "assignment" &&
-            n3t[2].type == "punctuator") {
-            skip2 = true;
-            continue;
+        if ((n3t[0].type == "string" || n3t[0].type == "number") &&
+            n3t[1].type == "operator" &&
+            (n3t[2].type == "string" || n3t[2].type == "number") &&
+            p2t[0].type == "string" && p2t[1].type == "assignment") {
+            operation(ast, n3t[1], p2t[0], n3t[0], n3t[2]);
         }
 
         if (n3t[0].type == "punctuator" && n3t[1].type == "string" &&
-            n3t[2].type == "punctuator" &&
-            n3t[0].val == n3t[2].val) {
-            Token rawstr("rawstring",
-                         "\"" + std::string(n3t[1].val) + "\"");
+            n3t[2].type == "punctuator" && n3t[0].val == n3t[2].val &&
+            p2t[0].type == "string" && p2t[1].type == "assignment") {
+            Token rawstr("rawstring", "\"" + std::string(n3t[1].val) + "\"");
             varassign(ast, "str", p2t[0], rawstr, line);
             continue;
         }
@@ -172,8 +177,7 @@ parse(std::vector<Token> tokens) {
         }
 
         if (n3t[0].type == "punctuator" && n3t[1].type == "string" &&
-            n3t[2].type == "punctuator" &&
-            n3t[0].val != n3t[2].val) {
+            n3t[2].type == "punctuator" && n3t[0].val != n3t[2].val) {
             try {
                 throw TNLSyntax("\n\nUnmatched quotes on line " +
                                 std::to_string(line) + ".");

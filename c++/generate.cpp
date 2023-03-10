@@ -44,6 +44,10 @@ void gencode(std::vector<std::map<std::string, std::string>> &ast) {
                 continue;
             }
         }
+
+        if (i["type"] == "Operation") {
+            code += (i["v1"] + " = " + i["v2"] + " " + i["operator"] + " " + i["v3"] + ";");
+        }
     }
 
     for (auto i : mallocs) {

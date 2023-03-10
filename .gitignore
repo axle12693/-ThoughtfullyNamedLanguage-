@@ -8,3 +8,4 @@ c++/compile_commands.json
 c++/output.c
 *.c
 c++/time.sh
+*.pyc

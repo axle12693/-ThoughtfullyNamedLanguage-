@@ -1,7 +1,7 @@
 int x
 x = 5
+x = 2 + 3
 str y
 str a
 y = 'lol'
 a = "lamoloserwannabe"
-a = 5

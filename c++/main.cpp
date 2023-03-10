@@ -1,5 +1,5 @@
 #include "generate.cpp"
-#include "newlexer.cpp"
+#include "lexer.cpp"
 #include "objects.cpp"
 #include "parse.cpp"
 #include <fstream>
