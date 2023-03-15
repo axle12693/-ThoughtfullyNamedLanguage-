@@ -19,7 +19,7 @@ void gencode(std::vector<std::map<std::string, std::string>> &ast) {
             if (i["datatype"] == "int" &&
                 std::find(intdecs.begin(), intdecs.end(), i["value"]) ==
                     intdecs.end()) {
-                code += ("int " + i["value"] + ";");
+                code += ("int " + i["value"] + " = 0;");
                 intdecs.push_back(i["value"]);
                 continue;
             }

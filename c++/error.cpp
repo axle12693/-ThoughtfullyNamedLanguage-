@@ -46,3 +46,14 @@ class TNLMismatchedType : public std::exception {
 
     std::string what() { return message; }
 };
+
+class TNLLongString : public std::exception {
+    // Used when a variable is assigned a value that's different than its type
+  private:
+    std::string message;
+
+  public:
+    TNLLongString(std::string msg) : message(msg) {}
+
+    std::string what() { return message; }
+};
